@@ -1,52 +1,65 @@
 # Docsumm
 
-Docsumm — project by Nabil Aulia Dika (dezzorigin).
+Docsumm — project oleh Nabil Aulia Dika (dezzorigin).
 
 ## Status Proyek
 
-**Hampir selesai (beta)** _(README ada, build artifact ada (sudah di-build))_
+**Hampir selesai (beta)** _(README ada, build artifact ada)_
 
-## Tech Stack
+## 📋 Tech Stack
 
-Next.js 14
+Next.js
 
-## Struktur Proyek
+## 🏗️ Arsitektur
+
+```mermaid
+flowchart LR
+  U[Pengguna] --> B[Browser]
+  B --> F[Frontend (React/Next.js)]
+  F --> A[API Routes]
+  A --> D[(Database)]
+```
+
+## 📁 Struktur Proyek
 
 ```
-.env.local
-.env.local.example
-.gitignore
-AGENTS.md
-CLAUDE.md
-README.md
 app/
-components.json
 components/
 docs/
-eslint.config.mjs
 hooks/
 lib/
+public/
+store/
+AGENTS.md
+CLAUDE.md
+LICENSE
+PRD.md
+README.md
+components.json
+eslint.config.mjs
 middleware.ts
 next-env.d.ts
 next.config.ts
-package-lock.json
 package.json
 postcss.config.mjs
-public/
-store/
 tsconfig.json
 ```
 
-## Getting Started
+## 🚀 Getting Started
 
 ```bash
+# Install dependencies
 npm install
+
+# Jalankan development server
 npm run dev
 ```
 
-## Lisensi
+> Untuk project HTML/Python/Go, lihat instruksi di atas atau file konfigurasi.
 
-MIT — lihat file [LICENSE](./LICENSE).
+## 📄 Lisensi
+
+MIT — lihat [LICENSE](./LICENSE).
 
 ---
-_Dibuat dan dikelola oleh Nabil Aulia Dika. Kontribusi dan issue welcome._
+_Dikembangkan oleh **dezzorigin** (Nabil Aulia Dika)._
