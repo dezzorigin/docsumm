@@ -5,8 +5,7 @@
 | Field | Nilai |
 |---|---|
 | Nama Proyek | Docsumm |
-| Repo | dezzorigin/docsumm |
-| Tech Stack | Next.js 14 |
+| Tech Stack | Next.js |
 | Status | Hampir selesai (beta) |
 | Penanggung Jawab | Nabil Aulia Dika |
 | Versi Dokumen | 1.0 |
@@ -14,7 +13,7 @@
 
 ## 2. Latar Belakang
 
-Proyek ini dikembangkan sebagai bagian dari portofolio dan kebutuhan operasional. Dokumen ini mengikuti standar PRD nasional untuk memastikan ruang lingkup, fitur, dan kriteria keberhasilan terdefinisi dengan jelas.
+Proyek ini dikembangkan sebagai bagian dari portofolio dan kebutuhan operasional. Dokumen ini mengikuti standar PRD nasional agar ruang lingkup, fitur, dan kriteria keberhasilan terdefinisi dengan jelas.
 
 ## 3. Masalah yang Diselesaikan
 
@@ -40,27 +39,25 @@ Pengguna membutuhkan solusi digital yang efisien, terukur, dan mudah dipelihara 
 ## 6. Fitur & Persyaratan Fungsional
 
 Struktur proyek (file/direktori utama):
-- .env.local
-- .env.local.example
-- .gitignore
-- AGENTS.md
-- CLAUDE.md
-- README.md
 - app/
-- components.json
 - components/
 - docs/
-- eslint.config.mjs
 - hooks/
 - lib/
+- public/
+- store/
+- AGENTS.md
+- CLAUDE.md
+- LICENSE
+- PRD.md
+- README.md
+- components.json
+- eslint.config.mjs
 - middleware.ts
 - next-env.d.ts
 - next.config.ts
-- package-lock.json
 - package.json
 - postcss.config.mjs
-- public/
-- store/
 - tsconfig.json
 
 ## 7. Persyaratan Non-Fungsional
@@ -72,7 +69,7 @@ Struktur proyek (file/direktori utama):
 
 ## 8. Arsitektur & Tech Stack
 
-Next.js 14
+Next.js
 
 ## 9. Milestone / Roadmap
 
