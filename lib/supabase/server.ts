@@ -1,4 +1,10 @@
-// Server Supabase client using @supabase/ssr
+// Server Supabase client using @supabase/ssr.
+// CATATAN: file ini HANYA dipakai saat aplikasi dijalankan sebagai server
+// Next.js (dev `next start` / self-host). Deployment Cloudflare Pages
+// memakai static export + worker/_worker.js — worker tidak mengimpor
+// file ini dan callback auth ditangani worker (GET /auth/callback).
+// Jangan impor file ini dari komponen klien (next/headers tidak ada
+// di browser).
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 

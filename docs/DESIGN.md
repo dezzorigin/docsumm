@@ -1,5 +1,24 @@
 # DocSumm — Design System
 
+---
+
+## Catatan implementasi (proper v1.0)
+
+- **Token pendek = sumber kebenaran.** `globals.css` dulu hanya
+  mendefinisikan token `--ds-*` (mis. `--ds-bg`, `--ds-accent`), padahal
+  semua komponen memakai token pendek (`--bg`, `--bg-2`, `--accent`,
+  `--text-2`, `--border`, `--danger`, ...). Akibatnya tombol dan surface
+  tampil tanpa warna (build lolos, render rusak). Sekarang token pendek
+  didefinisikan di `:root` dan `[data-theme="dark"]`, dan `--ds-*`
+  dipertahankan sebagai alias — jangan hapus alias sebelum semua referensi
+  `--ds-*` di komponen dicek.
+- **`.text-eyebrow`** ditambahkan (dipakai `SummaryCard`); token
+  `--bg-card` yang disebut spek Card di atas tidak ada — pakai `var(--bg)`.
+- **Landing content** kini `max-width: 1080px` (bukan 640px) karena hero
+  dua kolom + preview produk.
+- **Bottom tab bar** (mobile): Dashboard / Upload / **Templates** /
+  Settings (bukan "Documents").
+
 ## Identity
 - **Product name:** DocSumm
 - **Tagline:** Any document. Instant clarity.

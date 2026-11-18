@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DocSumm — Diagram</title>
+<style>
+  :root { --ink:#111; --mut:#666; --line:#d4d4d8; --accent:#1b7a47; --accent-bg:#eaf5ef; --card:#fff; --bg:#fafafa; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font-family:Georgia, 'Times New Roman', serif; line-height:1.6; }
+  header { max-width:880px; margin:0 auto; padding:56px 24px 8px; }
+  header p.kicker { font-family:ui-monospace, monospace; font-size:12px; letter-spacing:.14em; text-transform:uppercase; color:var(--accent); margin:0 0 12px; }
+  h1 { font-size:34px; line-height:1.15; margin:0 0 10px; font-weight:700; }
+  header p.lede { color:var(--mut); font-size:17px; max-width:640px; }
+  main { max-width:880px; margin:0 auto; padding:8px 24px 64px; }
+  figure { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:28px 24px 20px; margin:32px 0; }
+  figcaption { margin-top:18px; border-top:1px solid var(--line); padding-top:14px; }
+  figcaption h2 { font-size:19px; margin:0 0 6px; }
+  figcaption p { color:var(--mut); font-size:15px; margin:0; }
+  svg { width:100%; height:auto; display:block; }
+  .node { fill:#fff; stroke:var(--line); stroke-width:1.2; }
+  .node-accent { fill:var(--accent-bg); stroke:var(--accent); stroke-width:1.4; }
+  .node-dim { fill:#f7f7f8; stroke:var(--line); stroke-width:1.2; }
+  .lbl { font-family:ui-sans-serif, system-ui, sans-serif; font-size:13px; font-weight:650; fill:var(--ink); }
+  .sub { font-family:ui-sans-serif, system-ui, sans-serif; font-size:11px; fill:var(--mut); }
+  .edge { stroke:var(--accent); stroke-width:1.6; fill:none; marker-end:url(#arr); }
+  .edge-dim { stroke:#a0a0a5; stroke-width:1.3; fill:none; stroke-dasharray:4 3; marker-end:url(#arr-dim); }
+  .tag { font-family:ui-monospace, monospace; font-size:10.5px; fill:var(--accent); }
+  footer { max-width:880px; margin:0 auto; padding:0 24px 48px; color:var(--mut); font-size:13px; }
+  footer a { color:var(--accent); }
+</style>
+</head>
+<body>
+<header>
+  <p class="kicker">DocSumm · Diagram</p>
+  <h1>Tiga gambar, satu sistem.</h1>
+  <p class="lede">Arsitektur deployment, alur upload, dan pipeline ringkasan — digambar sebagai SVG langsung di halaman ini (bukan Mermaid), supaya tetap terbaca di repo, di browser, maupun di hasil cetak.</p>
+</header>
+<main>
+
+<figure>
+<svg viewBox="0 0 820 340" role="img" aria-label="Diagram arsitektur DocSumm">
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#1b7a47"/></marker>
+    <marker id="arr-dim" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#a0a0a5"/></marker>
+  </defs>
+  <!-- Browser -->
+  <rect class="node-accent" x="20" y="30" width="170" height="86" rx="10"/>
+  <text class="lbl" x="38" y="62">Browser</text>
+  <text class="sub" x="38" y="82">Next.js static export</text>
+  <text class="sub" x="38" y="100">React 19 · pdfjs-dist</text>
+  <!-- Pages -->
+  <rect class="node" x="300" y="30" width="220" height="86" rx="10"/>
+  <text class="lbl" x="318" y="62">Cloudflare Pages</text>
+  <text class="sub" x="318" y="82">out/ — 11 halaman statis</text>
+  <text class="sub" x="318" y="100">docsumm.pages.dev</text>
+  <!-- Worker -->
+  <rect class="node-accent" x="300" y="170" width="220" height="86" rx="10"/>
+  <text class="lbl" x="318" y="202">Pages Worker</text>
+  <text class="sub" x="318" y="222">worker/_worker.js — tanpa dep</text>
+  <text class="sub" x="318" y="240">/api/* · guard · callback</text>
+  <!-- OpenRouter -->
+  <rect class="node" x="620" y="30" width="180" height="86" rx="10"/>
+  <text class="lbl" x="638" y="62">OpenRouter</text>
+  <text class="sub" x="638" y="82">Gemini Flash 1.5 (ringkas)</text>
+  <text class="sub" x="638" y="100">Gemini 2.0 Flash (OCR)</text>
+  <!-- Supabase -->
+  <rect class="node" x="620" y="170" width="180" height="86" rx="10"/>
+  <text class="lbl" x="638" y="202">Supabase</text>
+  <text class="sub" x="638" y="222">Auth · Postgres · Storage</text>
+  <text class="sub" x="638" y="240">opsional — mode demo bila kosong</text>
+  <!-- localStorage -->
+  <rect class="node-dim" x="20" y="170" width="170" height="86" rx="10"/>
+  <text class="lbl" x="38" y="202">localStorage</text>
+  <text class="sub" x="38" y="222">mode demo: dokumen +</text>
+  <text class="sub" x="38" y="240">template di browser</text>
+  <!-- edges -->
+  <path class="edge" d="M190 73 H296"/>
+  <path class="edge" d="M410 116 V166"/>
+  <path class="edge" d="M520 73 H616"/>
+  <path class="edge" d="M520 213 H616"/>
+  <path class="edge-dim" d="M190 213 H296"/>
+  <text class="tag" x="205" y="60">HTTPS</text>
+  <text class="tag" x="425" y="146">API</text>
+  <text class="tag" x="540" y="60">AI, bila kunci ada</text>
+  <text class="tag" x="540" y="200">bila env terpasang</text>
+  <text class="tag" x="205" y="200">tanpa akun</text>
+  <text class="sub" x="20" y="310">Garis putus-putus = jalur yang hanya aktif di satu mode. Worker tidak pernah menyimpan kunci di browser.</text>
+</svg>
+<figcaption>
+  <h2>1 · Arsitektur deployment</h2>
+  <p>Frontend statis di Pages; semua yang dinamis (API, guard auth, callback PKCE, fallback halaman hasil) tinggal di satu Worker. Supabase dan OpenRouter keduanya opsional — tanpa keduanya, produk tetap jalan penuh dalam mode demo.</p>
+</figcaption>
+</figure>
+
+<figure>
+<svg viewBox="0 0 820 300" role="img" aria-label="Diagram alur upload DocSumm">
+  <defs>
+    <marker id="arr2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#1b7a47"/></marker>
+  </defs>
+  <rect class="node-accent" x="20" y="40" width="140" height="70" rx="10"/>
+  <text class="lbl" x="38" y="70">1 · Dropzone</text>
+  <text class="sub" x="38" y="90">PDF / JPG / PNG / TIFF</text>
+  <rect class="node" x="200" y="40" width="170" height="70" rx="10"/>
+  <text class="lbl" x="218" y="70">2 · Ekstrak teks</text>
+  <text class="sub" x="218" y="90">PDF: pdfjs di browser</text>
+  <rect class="node" x="410" y="40" width="170" height="70" rx="10"/>
+  <text class="lbl" x="428" y="70">3 · Ringkas</text>
+  <text class="sub" x="428" y="90">POST /api/summarize</text>
+  <rect class="node" x="620" y="40" width="180" height="70" rx="10"/>
+  <text class="lbl" x="638" y="70">4 · Simpan</text>
+  <text class="sub" x="638" y="90">Supabase / localStorage</text>
+  <rect class="node-accent" x="330" y="180" width="170" height="70" rx="10"/>
+  <text class="lbl" x="348" y="210">5 · Halaman hasil</text>
+  <text class="sub" x="348" y="230">/app/result/&lt;id&gt;</text>
+  <path class="edge" d="M160 75 H196" marker-end="url(#arr2)"/>
+  <path class="edge" d="M370 75 H406" marker-end="url(#arr2)"/>
+  <path class="edge" d="M580 75 H616" marker-end="url(#arr2)"/>
+  <path class="edge" d="M710 110 V180 H500" marker-end="url(#arr2)" style="marker-end:url(#arr2)"/>
+  <text class="sub" x="20" y="160">Gambar (bukan PDF) melompat dari langkah 2 ke worker untuk OCR — dan OCR butuh kunci AI (error 400 OCR_KEY_REQUIRED bila tidak ada).</text>
+  <text class="sub" x="20" y="282">Template yang dipilih saat upload mengubah langkah 3 menjadi mode tabel (satu baris per field).</text>
+</svg>
+<figcaption>
+  <h2>2 · Alur upload → hasil</h2>
+  <p>Lima langkah, satu redirect. Dulu langkah 3 hanya placeholder 501 — tidak ada dokumen yang pernah selesai diproses. Sekarang langkah 3 benar-benar ada, di worker, dengan dua mesin (AI dan ekstraktif).</p>
+</figcaption>
+</figure>
+
+<figure>
+<svg viewBox="0 0 820 320" role="img" aria-label="Diagram pipeline ringkasan DocSumm">
+  <defs>
+    <marker id="arr3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#1b7a47"/></marker>
+  </defs>
+  <rect class="node" x="20" y="30" width="170" height="70" rx="10"/>
+  <text class="lbl" x="38" y="60">Teks dokumen</text>
+  <text class="sub" x="38" y="80">dari PDF / OCR gambar</text>
+  <rect class="node-accent" x="300" y="30" width="200" height="70" rx="10"/>
+  <text class="lbl" x="318" y="60">Mesin AI</text>
+  <text class="sub" x="318" y="80">Gemini Flash via OpenRouter</text>
+  <rect class="node-dim" x="300" y="140" width="200" height="70" rx="10"/>
+  <text class="lbl" x="318" y="170">Mesin ekstraktif</text>
+  <text class="sub" x="318" y="190">kalimat + regex, lokal</text>
+  <rect class="node" x="620" y="30" width="180" height="70" rx="10"/>
+  <text class="lbl" x="638" y="60">JSON terstruktur</text>
+  <text class="sub" x="638" y="80">mode kartu / tabel</text>
+  <rect class="node-accent" x="620" y="140" width="180" height="70" rx="10"/>
+  <text class="lbl" x="638" y="170">Render hasil</text>
+  <text class="sub" x="638" y="190">SummaryCard / Table</text>
+  <path class="edge" d="M190 65 H296" marker-end="url(#arr3)"/>
+  <path class="edge" d="M500 65 H616" marker-end="url(#arr3)"/>
+  <path class="edge" d="M710 100 V136" marker-end="url(#arr3)"/>
+  <path class="edge" d="M500 175 H360" marker-end="url(#arr3)" style="stroke-dasharray:4 3"/>
+  <path class="edge" d="M385 140 V104" marker-end="url(#arr3)" style="stroke-dasharray:4 3"/>
+  <text class="tag" x="205" y="52">bila kunci ada</text>
+  <text class="tag" x="205" y="130">tanpa kunci / AI gagal</text>
+  <text class="sub" x="20" y="262">Garis putus-putus = jalur fallback. Bila AI gagal di tengah jalan (kuota/model mati), worker tetap mengembalikan 200 dengan ringkasan ekstraktif + field ai_error.</text>
+  <text class="sub" x="20" y="290">UI menandai hasil ekstraktif dengan banner “Ringkasan otomatis (tanpa AI)” — tidak pernah diklaim sebagai hasil AI.</text>
+</svg>
+<figcaption>
+  <h2>3 · Pipeline ringkasan</h2>
+  <p>Dua mesin, satu kontrak output. Klien (hook <code>useUpload</code>) tidak perlu tahu mesin mana yang bekerja — ia hanya menerima <code>{ summary, engine }</code> dan menyimpan <code>summary</code> apa adanya.</p>
+</figcaption>
+</figure>
+
+</main>
+<footer>
+  DocSumm — diagram v1.0 (18 Nov 2026). Sumber kebenaran tetap kode: <a href="https://github.com/dezzorigin/docsumm/blob/main/worker/_worker.js">worker/_worker.js</a>, <a href="https://github.com/dezzorigin/docsumm/blob/main/docs/ARCHITECTURE.md">docs/ARCHITECTURE.md</a>.
+</footer>
+</body>
+</html>

@@ -30,21 +30,19 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
+# env files — JANGAN PERNAH commit kredensial (.env.local berisi kunci).
 .env*
+!.env.example
 
 # vercel
 .vercel
 
+# cloudflare
+.wrangler/
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts
-^.env$
-^.env.*
-node_modules/
-__pycache__/
-.venv/
-dist/
-build/
-^.env$
-^.env.*
+
+# generated at build (prebuild copies it from pdfjs-dist)
+public/pdf.worker.min.mjs

@@ -23,26 +23,52 @@
     --ring: 0 0% 9%;
     --radius: 0.625rem;
 
-    /* DocSumm custom tokens */
-    --ds-bg: #FFFFFF;
-    --ds-bg-2: #F7F7F8;
-    --ds-bg-3: #EFEFEF;
-    --ds-card: #FFFFFF;
-    --ds-border: #E8E8EA;
-    --ds-border-2: #D4D4D8;
-    --ds-text-1: #111111;
-    --ds-text-2: #666666;
-    --ds-text-3: #A0A0A5;
-    --ds-accent: #1B7A47;
-    --ds-accent-bg: #EAF5EF;
-    --ds-accent-bd: #B8DEC9;
-    --ds-danger: #C0392B;
-    --ds-danger-bg: #FEF0EF;
-    --ds-warn: #8A6200;
-    --ds-warn-bg: #FEF8EC;
+    /* DocSumm design tokens (DESIGN.md).
+       NOTE: komponen memakai nama pendek (--bg, --accent, --text-2, ...).
+       Dulu file ini hanya mendefinisikan varian --ds-*, sehingga semua
+       var(--accent) / var(--bg-2) / var(--text-2) di komponen tidak
+       ter-resolve dan tombol/permukaan tampil tanpa warna. Token pendek
+       di bawah ini adalah sumber kebenaran; --ds-* dipertahankan sebagai
+       alias supaya kode lama yang memakainya tidak rusak. */
+    --bg: #ffffff;
+    --bg-2: #f7f7f8;
+    --bg-3: #efefef;
+    --text-1: #111111;
+    --text-2: #666666;
+    --text-3: #a0a0a5;
+    --accent: #1b7a47;
+    --accent-bg: #eaf5ef;
+    --accent-bd: #b8dec9;
+    --danger: #c0392b;
+    --danger-bg: #fef0ef;
+    --warn: #8a6200;
+    --warn-bg: #fef8ec;
+
+    /* Alias --ds-* (kompatibilitas) */
+    --ds-bg: var(--bg);
+    --ds-bg-2: var(--bg-2);
+    --ds-bg-3: var(--bg-3);
+    --ds-card: var(--bg);
+    --ds-border: #e8e8ea;
+    --ds-border-2: #d4d4d8;
+    --ds-text-1: var(--text-1);
+    --ds-text-2: var(--text-2);
+    --ds-text-3: var(--text-3);
+    --ds-accent: var(--accent);
+    --ds-accent-bg: var(--accent-bg);
+    --ds-accent-bd: var(--accent-bd);
+    --ds-danger: var(--danger);
+    --ds-danger-bg: var(--danger-bg);
+    --ds-warn: var(--warn);
+    --ds-warn-bg: var(--warn-bg);
     --ds-r: 10px;
     --ds-r-lg: 16px;
     --ds-r-xl: 22px;
+
+    /* Border memakai nilai hex, bukan triplet HSL shadcn di atas,
+       karena komponen memakainya langsung sebagai warna. */
+    --border: #e8e8ea;
+    --border-2: #d4d4d8;
   }
 
   [data-theme="dark"] {
@@ -66,23 +92,39 @@
     --input: 0 0% 17%;
     --ring: 0 0% 83%;
 
-    /* DocSumm dark tokens */
-    --ds-bg: #101012;
-    --ds-bg-2: #18181B;
-    --ds-bg-3: #222226;
-    --ds-card: #18181B;
-    --ds-border: #2C2C30;
-    --ds-border-2: #3C3C42;
-    --ds-text-1: #F0F0F2;
-    --ds-text-2: #888892;
-    --ds-text-3: #505058;
-    --ds-accent: #2ECC71;
-    --ds-accent-bg: #0C2218;
-    --ds-accent-bd: #174D2E;
-    --ds-danger: #E87070;
-    --ds-danger-bg: #220E0E;
-    --ds-warn: #F5C542;
-    --ds-warn-bg: #1E1800;
+    --bg: #101012;
+    --bg-2: #18181b;
+    --bg-3: #222226;
+    --text-1: #f0f0f2;
+    --text-2: #888892;
+    --text-3: #505058;
+    --accent: #2ecc71;
+    --accent-bg: #0c2218;
+    --accent-bd: #174d2e;
+    --danger: #e87070;
+    --danger-bg: #220e0e;
+    --warn: #f5c542;
+    --warn-bg: #1e1800;
+
+    --ds-bg: var(--bg);
+    --ds-bg-2: var(--bg-2);
+    --ds-bg-3: var(--bg-3);
+    --ds-card: var(--bg-2);
+    --ds-border: #2c2c30;
+    --ds-border-2: #3c3c42;
+    --ds-text-1: var(--text-1);
+    --ds-text-2: var(--text-2);
+    --ds-text-3: var(--text-3);
+    --ds-accent: var(--accent);
+    --ds-accent-bg: var(--accent-bg);
+    --ds-accent-bd: var(--accent-bd);
+    --ds-danger: var(--danger);
+    --ds-danger-bg: var(--danger-bg);
+    --ds-warn: var(--warn);
+    --ds-warn-bg: var(--warn-bg);
+
+    --border: #2c2c30;
+    --border-2: #3c3c42;
   }
 }
 
@@ -91,14 +133,28 @@
     box-sizing: border-box;
   }
   body {
-    background-color: var(--ds-bg);
-    color: var(--ds-text-1);
-    font-family: 'Inter', sans-serif;
+    background-color: var(--bg);
+    color: var(--text-1);
+    font-family: var(--font-body, 'Inter', sans-serif);
     line-height: 1.6;
     -webkit-tap-highlight-color: transparent;
   }
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'Space Grotesk', sans-serif;
+    font-family: var(--font-display, 'Space Grotesk', sans-serif);
     font-weight: 700;
+  }
+  ::selection {
+    background-color: var(--accent-bg);
+  }
+}
+
+@layer components {
+  /* Label kecil kapital yang dipakai SummaryCard. Dulu kelas ini tidak
+     ada di CSS mana pun sehingga label tampil sebagai teks biasa. */
+  .text-eyebrow {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
   }
 }

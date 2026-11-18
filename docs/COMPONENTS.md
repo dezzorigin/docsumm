@@ -11,13 +11,19 @@
 
 ### `<Logo />`
 Props: size ('sm' | 'md' | 'lg'), showText (boolean)
-Usage: Sidebar, TopNav, Auth pages
+Usage: Sidebar, TopNav, MobileNav, MarketingNav, auth pages.
+SVG mark: dokumen + centang (dibuat ulang di proper v1.0).
+
+### `<MarketingNav />`
+Navbar landing: logo, link Fitur / Cara kerja / Template / FAQ,
+ikon GitHub → https://github.com/dezzorigin/docsumm, Sign In,
+tombol "Coba gratis".
 
 ### `<Sidebar />`
 - Desktop only (hidden < 580px)
-- Props: activeRoute (string)
-- Items: Dashboard, Upload, Documents, Settings
-- Logout button at bottom
+- Items: Dashboard, Upload, Templates, Settings (+ badge "Demo" bila mode demo)
+- "Keluar ke beranda" di bawah; logout (mode Supabase) / kembali ke landing (mode demo)
+- Null-safe: tidak crash bila Supabase belum terkonfigurasi
 
 ### `<TopNav />`
 - Mobile: logo + hamburger + theme toggle
@@ -26,18 +32,22 @@ Usage: Sidebar, TopNav, Auth pages
 
 ### `<MobileNav />`
 - Bottom tab bar (mobile only)
-- 4 items: Dashboard, Upload, Docs, Settings
+- 4 items: Dashboard, Upload, Templates, Settings
 - Active state with accent color
 
-### `<AppShell />`
-- Wraps all authenticated pages
-- Composes Sidebar + TopNav + MobileNav
-- Handles layout switching based on screen size
+### `<AuthGuard />`
+- Client guard untuk `app/app/layout.tsx`: mode Supabase tanpa sesi →
+  redirect `/auth/login`; mode demo selalu lolos.
+- Pasangan dari guard worker (lihat `docs/API.md`).
 
 ### `<ThemeToggle />`
 - Icon button: sun/moon
-- Toggles data-theme on <html>
+- Toggles data-theme on `<html>`
 - Persists to localStorage
+
+> `components/layout/AppShell.tsx` masih ada tapi **tidak dipakai** —
+> layout `app/app/layout.tsx` menyusun Sidebar + TopNav + MobileNav
+> secara inline. Jangan membangun di atas AppShell.
 
 ---
 
@@ -53,8 +63,8 @@ Shows: icon, label, browse button, file type hint
 
 ### `<UploadOptions />`
 Props: onSelect: (type: 'camera' | 'scanner') => void
-Two cards: Camera, Scanner
-Mobile-first layout (grid 2 cols)
+Two cards: Camera, Scanner. Mobile-first layout (grid 2 cols).
+**Belum dipakai halaman mana pun** (fitur lanjutan).
 
 ### `<ProgressCard />`
 Props:
@@ -67,10 +77,18 @@ Shows animated progress bar + step text
 
 ## Result Components
 
+### `<ResultView />`
+Client component di balik `/app/result/[id]`. Membaca id dokumen dari
+`window.location.pathname` (bukan `useParams()` — payload RSC shell
+prerender membawa id contoh; lihat `docs/DEPLOYMENT.md`).
+Menampilkan: ResultHeader, MetaChips, TagList, SummaryCard /
+SummaryTable, banner mesin ekstraktif, ActionBar (Share / Export .txt /
+hapus dokumen).
+
 ### `<SummaryCard />`
 Props:
 - label: string
-- icon: string
+- icon: ReactNode (sejak proper v1.0: benar-benar di-render)
 - variant: 'default' | 'danger' | 'success' | 'warning'
 - children: ReactNode
 Renders one semantic block with colored left border + eyebrow label
@@ -93,7 +111,7 @@ Props:
 - onShare: () => void
 - onExport: () => void
 - onNew: () => void
-Three outline buttons: Share, Export PDF, New document
+Three outline buttons: Share, Export (file .txt), New document
 
 ### `<ResultHeader />`
 Props:
@@ -107,10 +125,11 @@ Card with file icon + metadata
 
 ## Template Components (Build Your Own Summary Model)
 
-### `<TemplateBuilder />`
-Main component for creating/editing a custom summary template.
-State: list of FieldRow, output mode (card/table), template name
-Actions: add field, remove field, reorder (drag), save
+### Builder (di halaman, bukan komponen terpisah)
+Template builder tinggal **inline di `app/app/templates/page.tsx`**
+(nama, deskripsi, mode output, daftar FieldRow, preview, simpan).
+`components/template/TemplateBuilder.tsx` yang lama adalah stub
+placeholder dan **dihapus** di proper v1.0 — jangan dicari lagi.
 
 ### `<FieldRow />`
 Props:
@@ -124,8 +143,10 @@ Props: fields: TemplateField[], mode: 'card' | 'table'
 Live preview of what the output will look like with dummy data
 
 ### `<TemplatePicker />`
-Props: templates: Template[], onSelect: (id) => void
-Shown on Upload page — let user pick a template before processing
+Props: templates: Template[], selectedId?: string | null, onSelect: (id) => void
+Shown on Upload page — let user pick a template before processing.
+Opsi "Ringkasan standar" (tanpa template) selalu tersedia; template
+yang ditandai default terpilih otomatis.
 
 ---
 
@@ -133,7 +154,9 @@ Shown on Upload page — let user pick a template before processing
 
 ### `<StatGrid />`
 Props: stats: { label: string, value: string | number }[]
-Renders 3-col responsive stat cards
+Renders 3-col responsive stat cards. Dashboard memakai statistik
+**nyata** (total, bulan ini, selesai, rata-rata halaman), bukan angka
+hardcode.
 
 ### `<DocTable />`
 Props:
@@ -153,19 +176,11 @@ Centered empty state with icon
 ### `<LoadingSpinner />`
 Props: size ('sm' | 'md' | 'lg'), label?: string
 
-### `<StatusBadge />`
-Props: status: 'processing' | 'done' | 'error'
-Maps to yellow/green/red badge
-
-### `<ContactCTA />`
-Used at bottom of result page (bang Imam's request)
-Card with: "Mau custom model summary sendiri?"
-CTA button → opens contact modal or mailto
-
-### `<ContactModal />`
-Form: name, email, company, message
-Submits to contact_requests table
-Shows success state after submit
+### `<ContactCTA />` / `<ContactModal />`
+Card + form "Mau custom model summary sendiri?" (permintaan Bang Imam).
+Form: name, email, company, message → `contact_requests` table.
+**Belum dipakai halaman mana pun** (fitur lanjutan; result page tidak
+menampilkannya di v1.0).
 
 ---
 

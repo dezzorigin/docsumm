@@ -9,16 +9,16 @@ export function MobileNav() {
   const navItems = [
     { label: 'Dashboard', href: '/app/dashboard', icon: '📊' },
     { label: 'Upload', href: '/app/upload', icon: '📤' },
-    { label: 'Docs', href: '/app/dashboard', icon: '📄' },
+    { label: 'Templates', href: '/app/templates', icon: '📝' },
     { label: 'Settings', href: '/app/settings', icon: '⚙️' },
   ]
 
   return (
-    <nav 
-      className="md:hidden fixed bottom-0 left-0 right-0 h-16 border-t flex items-center justify-around safe-bottom z-50" 
-      style={{ 
-        borderColor: 'var(--border)', 
-        backgroundColor: 'var(--bg)' 
+    <nav
+      className="md:hidden fixed bottom-0 left-0 right-0 h-16 border-t flex items-center justify-around safe-bottom z-50"
+      style={{
+        borderColor: 'var(--border)',
+        backgroundColor: 'var(--bg)'
       }}
     >
       {navItems.map((item) => {

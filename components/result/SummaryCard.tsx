@@ -14,7 +14,9 @@ export function SummaryCard({
       borderColor: variant === 'danger' ? 'var(--danger)' : variant === 'warning' ? 'var(--warn)' : 'var(--accent)',
       backgroundColor: 'var(--bg-2)'
     }}>
-      <div className="text-eyebrow mb-2" style={{ color: 'var(--accent)' }}>{label}</div>
+      <div className="text-eyebrow mb-2" style={{ color: 'var(--accent)' }}>
+        {icon ? `${icon} ${label}` : label}
+      </div>
       {children}
     </div>
   )
