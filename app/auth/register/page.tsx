@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
+import { isSupabaseConfigured } from '@/lib/config'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 
@@ -13,14 +14,16 @@ export default function RegisterPage() {
   const [error, setError] = useState<string | null>(null)
   const router = useRouter()
   const supabase = createClient()
+  const demoMode = !isSupabaseConfigured()
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault()
+    if (!supabase) return
     setLoading(true)
     setError(null)
 
     try {
-      const { data, error } = await supabase.auth.signUp({
+      const { error } = await supabase.auth.signUp({
         email,
         password,
         options: {
@@ -52,10 +55,26 @@ export default function RegisterPage() {
           <p style={{ color: 'var(--text-2)' }}>Create your DocSumm account</p>
         </div>
 
-        <div className="p-8 rounded-xl border" style={{ 
-          borderColor: 'var(--border)', 
-          backgroundColor: 'var(--bg-2)' 
+        <div className="p-8 rounded-xl border" style={{
+          borderColor: 'var(--border)',
+          backgroundColor: 'var(--bg-2)'
         }}>
+          {demoMode ? (
+            <div className="space-y-4">
+              <p className="text-sm leading-relaxed" style={{ color: 'var(--text-2)' }}>
+                <strong style={{ color: 'var(--text-1)' }}>Mode demo aktif</strong> — Supabase
+                belum terpasang di deployment ini, jadi pendaftaran akun belum tersedia.
+                Kamu tetap bisa memakai semua fitur tanpa daftar.
+              </p>
+              <Link
+                href="/app/dashboard"
+                className="block text-center w-full px-6 py-3 rounded-lg text-white font-medium transition-all hover:opacity-90"
+                style={{ backgroundColor: 'var(--accent)' }}
+              >
+                Lanjutkan tanpa akun →
+              </Link>
+            </div>
+          ) : (
           <form onSubmit={handleRegister} className="space-y-4">
             <div>
               <label htmlFor="name" className="block text-sm font-medium mb-2">
@@ -139,7 +158,9 @@ export default function RegisterPage() {
               {loading ? 'Creating account...' : 'Create Account'}
             </button>
           </form>
+          )}
 
+          {!demoMode && (
           <div className="mt-6 text-center">
             <p className="text-sm" style={{ color: 'var(--text-2)' }}>
               Already have an account?{' '}
@@ -148,6 +169,7 @@ export default function RegisterPage() {
               </Link>
             </p>
           </div>
+          )}
         </div>
 
         <div className="mt-6 text-center">

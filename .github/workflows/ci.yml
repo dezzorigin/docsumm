@@ -1,0 +1,179 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Build (static export + worker)
+        run: npm run build
+        env:
+          NEXT_TELEMETRY_DISABLED: 1
+
+      - name: Upload static output
+        uses: actions/upload-artifact@v4
+        with:
+          name: out
+          path: out/
+
+  worker-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Worker unit tests
+        run: npm test
+
+  # Gate keamanan dependensi produksi (pengganti `npm audit --omit=dev`).
+  # `npm audit --omit=dev` tetap melaporkan advisory yang hanya reachable
+  # lewat dev deps (bug npm yang diketahui), sehingga job audit lama gagal
+  # deterministik pada temuan HIGH dev-only padahal pohon produksi bersih.
+  # Sweep ini memakai sumber data yang sama (GitHub Advisory Database,
+  # dipakai Dependabot) tapi hanya memeriksa dependensi produksi, dan
+  # tetap FAIL kalau ada temuan high/critical di prod.
+  advisory-sweep:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Advisory sweep (production, high and above)
+        run: python3 scripts/advisory-sweep.py
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # Smoke test end-to-end lokal: sajikan out/ + worker, lalu curl.
+  # Beda dari repo Next sebelumnya (lighthouse / kontrak SSE): di sini
+  # yang diuji adalah KONTRAK RINGKASAN — /api/status mode demo,
+  # POST /api/summarize ekstraktif (card + table/template), dan landing
+  # yang me-render hero + preview produk.
+  smoke:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build (static export + worker)
+        run: npm run build
+        env:
+          NEXT_TELEMETRY_DISABLED: 1
+
+      - name: Serve + smoke test
+        run: |
+          set -euo pipefail
+          (PORT=8331 npm run serve > /tmp/docsumm-serve.log 2>&1 &)
+          for i in $(seq 1 30); do
+            curl -fsS http://127.0.0.1:8331/api/status >/dev/null 2>&1 && break
+            sleep 1
+          done
+          curl -fsS http://127.0.0.1:8331/ | grep -q "Any document" \
+            && echo "landing: hero OK"
+          curl -fsS http://127.0.0.1:8331/api/status | python3 -c "
+          import json, sys
+          d = json.load(sys.stdin)
+          assert d['ok'] is True and d['mode'] == 'demo' and d['engine'] == 'extractive', d
+          print('status: mode demo + engine extractive OK')
+          "
+          curl -fsS -X POST http://127.0.0.1:8331/api/summarize \
+            -H 'content-type: application/json' \
+            -d '{"text": "Laporan inspeksi lambung kapal MV Nusantara di Pelabuhan Belawan, 14 Juni 2024. Ditemukan korosi level 3 pada frame 42-48 yang wajib segera diperbaiki karena risiko kebocoran. Disarankan sandblasting dan coating ulang dalam 30 hari, batas perbaikan 14 Juli 2024.", "title": "Laporan Inspeksi Kapal.pdf"}' \
+            | python3 -c "
+          import json, sys
+          d = json.load(sys.stdin)
+          assert d['engine'] == 'extractive', d
+          s = d['summary']
+          assert s['mode'] == 'card' and len(s['overview']) > 40, s
+          assert any('korosi' in p.lower() for p in s['critical_points']), s
+          assert len(s['key_dates']) >= 1, s
+          assert s['metadata']['document_type'] == 'Inspection Report', s
+          print('summarize card: bentuk + isi OK')
+          "
+          curl -fsS -X POST http://127.0.0.1:8331/api/summarize \
+            -H 'content-type: application/json' \
+            -d '{"text": "Laporan inspeksi lambung kapal MV Nusantara di Pelabuhan Belawan, 14 Juni 2024. Ditemukan korosi level 3 pada frame 42-48 yang wajib segera diperbaiki.", "title": "Laporan Inspeksi Kapal.pdf", "template": {"id": "tpl-1", "fields": [{"key": "document_type", "label": "Jenis Dokumen", "description": "Tipe dokumen", "required": true}, {"key": "critical_points", "label": "Poin Kritis", "description": "korosi dan kerusakan", "required": true}]}}' \
+            | python3 -c "
+          import json, sys
+          d = json.load(sys.stdin)
+          s = d['summary']
+          assert s['mode'] == 'table' and len(s['rows']) == 2, s
+          assert 'korosi' in s['rows'][1]['value'].lower(), s
+          print('summarize table (template): bentuk + isi OK')
+          "
+          curl -fsS -o /dev/null -w 'POST kosong: %{http_code}\n' -X POST http://127.0.0.1:8331/api/summarize \
+            -H 'content-type: application/json' -d '{}' | grep -q '400' \
+            || (echo "harus 400 untuk body kosong" && exit 1)
+          curl -fsS http://127.0.0.1:8331/app/dashboard | grep -q "Dashboard" \
+            && echo "dashboard: render OK"
+          cat /tmp/docsumm-serve.log | tail -3
+
+  # Docs: semua tautan relatif di docs/*.md + README harus menunjuk ke
+  # file yang benar-benar ada (menangkap PRD/diagram yang menunjuk ke
+  # file yang sudah dipindah/dihapus, mis. app/(app) → app/app).
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check relative links in docs + README
+        run: |
+          python3 - <<'EOF'
+          import re, sys
+          from pathlib import Path
+
+          root = Path('.')
+          files = sorted(root.glob('docs/*.md')) + [root / 'README.md', root / 'PRD.md']
+          bad = []
+          for f in files:
+              text = f.read_text(encoding='utf-8')
+              base = f.parent
+              for m in re.finditer(r'\[[^\]]*\]\(([^)]+)\)', text):
+                  target = m.group(1).strip()
+                  if not target or target.startswith(('http://', 'https://', 'mailto:', '#')):
+                      continue
+                  target = target.split('#')[0]
+                  if not target:
+                      continue
+                  p = (base / target).resolve()
+                  if not p.exists():
+                      bad.append(f'{f}: {target}')
+          if bad:
+              print('tautan rusak:')
+              print('\n'.join(bad))
+              sys.exit(1)
+          print(f'docs link check OK ({len(files)} file)')
+          EOF

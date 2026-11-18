@@ -1,3 +1,5 @@
+import { MarketingNav } from '@/components/layout/MarketingNav'
+
 export default function MarketingLayout({
   children,
 }: {
@@ -5,6 +7,7 @@ export default function MarketingLayout({
 }) {
   return (
     <div className="min-h-screen">
+      <MarketingNav />
       {children}
     </div>
   )

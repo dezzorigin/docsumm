@@ -1,5 +1,9 @@
 # DocSumm — Database Schema
 
+> SQL siap eksekusi ada di [`supabase/schema.sql`](../supabase/schema.sql)
+> (tabel + RLS + trigger profil + policy Storage) — dokumen ini adalah
+> penjelasan manusiawinya. Keduanya harus dijaga tetap sejalan.
+
 ## Tables
 
 ### users (managed by Supabase Auth)

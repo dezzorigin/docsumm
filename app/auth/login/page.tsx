@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
+import { isSupabaseConfigured } from '@/lib/config'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 
@@ -11,15 +12,18 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const router = useRouter()
+  // null di mode demo — form login tidak bisa dipakai tanpa Supabase.
   const supabase = createClient()
+  const demoMode = !isSupabaseConfigured()
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
+    if (!supabase) return
     setLoading(true)
     setError(null)
 
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
+      const { error } = await supabase.auth.signInWithPassword({
         email,
         password,
       })
@@ -45,10 +49,31 @@ export default function LoginPage() {
           <p style={{ color: 'var(--text-2)' }}>Sign in to your DocSumm account</p>
         </div>
 
-        <div className="p-8 rounded-xl border" style={{ 
-          borderColor: 'var(--border)', 
-          backgroundColor: 'var(--bg-2)' 
+        <div className="p-8 rounded-xl border" style={{
+          borderColor: 'var(--border)',
+          backgroundColor: 'var(--bg-2)'
         }}>
+          {demoMode ? (
+            <div className="space-y-4">
+              <p className="text-sm leading-relaxed" style={{ color: 'var(--text-2)' }}>
+                <strong style={{ color: 'var(--text-1)' }}>Mode demo aktif</strong> — Supabase
+                belum terpasang di deployment ini, jadi belum ada akun untuk dimasuki.
+                Kamu tetap bisa memakai semua fitur tanpa daftar: dokumen disimpan
+                lokal di browser.
+              </p>
+              <Link
+                href="/app/dashboard"
+                className="block text-center w-full px-6 py-3 rounded-lg text-white font-medium transition-all hover:opacity-90"
+                style={{ backgroundColor: 'var(--accent)' }}
+              >
+                Lanjutkan tanpa akun →
+              </Link>
+              <p className="text-xs text-center" style={{ color: 'var(--text-3)' }}>
+                Untuk mengaktifkan login: pasang NEXT_PUBLIC_SUPABASE_URL &amp;
+                NEXT_PUBLIC_SUPABASE_ANON_KEY (lihat .env.example).
+              </p>
+            </div>
+          ) : (
           <form onSubmit={handleLogin} className="space-y-4">
             <div>
               <label htmlFor="email" className="block text-sm font-medium mb-2">
@@ -108,15 +133,18 @@ export default function LoginPage() {
               {loading ? 'Signing in...' : 'Sign In'}
             </button>
           </form>
+          )}
 
+          {!demoMode && (
           <div className="mt-6 text-center">
             <p className="text-sm" style={{ color: 'var(--text-2)' }}>
-              Don't have an account?{' '}
+              Don&apos;t have an account?{' '}
               <Link href="/auth/register" className="font-medium" style={{ color: 'var(--accent)' }}>
                 Sign up
               </Link>
             </p>
           </div>
+          )}
         </div>
 
         <div className="mt-6 text-center">
