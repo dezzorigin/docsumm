@@ -46,8 +46,7 @@ menjalankan `git add .env.local`.
 
 ## Worker
 
-- Worker tidak me-log request body, kunci, atau isi dokumen.
-- Validasi input di `validateSummarizeBody()`: `text` maks 120.000
+- Worker tidak me-log request body, kunci, atau isi dokumen.- Validasi input di `validateSummarizeBody()`: `text` maks 120.000
   karakter, gambar maks ~8 MB dan harus data URL `png/jpg/webp/tiff`,
   template harus punya field valid. Body bukan JSON → 400.
 - Worker hanya memanggil 2 host luar: `openrouter.ai` (bila kunci ada)
@@ -58,6 +57,23 @@ menjalankan `git add .env.local`.
   teks tidak diteruskan ke mana pun). Gambar untuk OCR diteruskan ke
   OpenRouter bila kunci ada — itu satu-satunya aliran data dokumen
   keluar dari Pages.
+
+## Higiene dependensi (CI gate)
+
+- Job `advisory-sweep` di CI memeriksa **hanya dependensi produksi**
+  terhadap GitHub Advisory Database, dan FAIL bila ada temuan
+  high/critical (`scripts/advisory-sweep.py` — pengganti `npm audit`,
+  yang bocor ke dev deps).
+- `shadcn` (CLI) **harus tetap di `devDependencies`**. Ia pernah duduk
+  di `dependencies` dan menyeret seluruh pohonnya (MCP SDK, express,
+  dotenvx, undici, ...) ke klasifikasi produksi — 57 temuan HIGH/CRITICAL
+  di CI run pertama PR proper ini. Tidak ada kode runtime yang meng-import
+  `shadcn`.
+- Versi yang dipasang sudah melewati gate ini: Next.js 16.4.6, zod 4.6.7,
+  postcss 8.5.23 (via Next), sharp 0.35.5, nanoid 3.3.20,
+  source-map-js 1.2.2. Bila advisory baru muncul, naikkan versi
+  (atau pindah paket ke dev bila memang hanya dipakai build-time) —
+  jangan menonaktifkan gate.
 
 ## Yang belum / bukan jaminan
 

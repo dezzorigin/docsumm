@@ -34,7 +34,7 @@ API = "https://api.github.com/advisories?ecosystem=npm&per_page=100&affects="
 
 def norm(version):
     """Normalize a version string into a comparable int list."""
-    version = re.split(r"[-+]", version, 1)[0]
+    version = re.split(r"[-+]", version, maxsplit=1)[0]
     parts = [int(x) if x.isdigit() else 0 for x in version.split(".")]
     return parts + [0] * (4 - len(parts))
 

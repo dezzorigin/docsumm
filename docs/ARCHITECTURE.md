@@ -4,7 +4,7 @@
 
 | Lapisan | Teknologi |
 |---|---|
-| Framework | Next.js 16.2.9 (App Router), React 19.2.4, TypeScript (strict) |
+| Framework | Next.js 16.4.6 (App Router), React 19.2.4, TypeScript (strict) |
 | Render | Static export (`output: 'export'`) — 11 halaman ke `out/` |
 | Styling | Tailwind CSS v4 (`@import "tailwindcss"` di `app/globals.css`), shadcn/ui |
 | State | Zustand (`store/useAppStore.ts`), React hooks |

@@ -58,6 +58,12 @@ jobs:
   # Sweep ini memakai sumber data yang sama (GitHub Advisory Database,
   # dipakai Dependabot) tapi hanya memeriksa dependensi produksi, dan
   # tetap FAIL kalau ada temuan high/critical di prod.
+  #
+  # PENTING: `shadcn` (CLI) HARUS tetap di devDependencies. Ia pernah
+  # duduk di dependencies dan menyeret seluruh pohonnya (MCP SDK, express,
+  # dotenvx, undici, ...) ke klasifikasi produksi — 57 temuan HIGH/CRITICAL
+  # di CI run pertama PR ini. Tidak ada kode runtime yang meng-import
+  # `shadcn`; ia hanya dipakai scaffolding komponen.
   advisory-sweep:
     runs-on: ubuntu-latest
     steps:
@@ -134,9 +140,13 @@ jobs:
           assert 'korosi' in s['rows'][1]['value'].lower(), s
           print('summarize table (template): bentuk + isi OK')
           "
-          curl -fsS -o /dev/null -w 'POST kosong: %{http_code}\n' -X POST http://127.0.0.1:8331/api/summarize \
-            -H 'content-type: application/json' -d '{}' | grep -q '400' \
-            || (echo "harus 400 untuk body kosong" && exit 1)
+          # JANGAN pakai -f di sini: curl -f menelan output -w saat error
+          # (exit 22 tanpa body), sehingga grep tidak pernah cocok. Bandingkan
+          # kode status secara eksplisit.
+          code=$(curl -s -o /dev/null -w '%{http_code}' -X POST http://127.0.0.1:8331/api/summarize \
+            -H 'content-type: application/json' -d '{}')
+          [ "$code" = "400" ] || (echo "harus 400 untuk body kosong, dapat $code" && exit 1)
+          echo "POST kosong: 400 OK"
           curl -fsS http://127.0.0.1:8331/app/dashboard | grep -q "Dashboard" \
             && echo "dashboard: render OK"
           cat /tmp/docsumm-serve.log | tail -3
